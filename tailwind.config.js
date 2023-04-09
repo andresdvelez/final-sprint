@@ -1,18 +1,29 @@
+import { fontFamily } from "tailwindcss/defaultTheme";
+
 /** @type {import('tailwindcss').Config} */
-module.exports = {
-  content: [
-    './pages/**/*.{js,ts,jsx,tsx}',
-    './components/**/*.{js,ts,jsx,tsx}',
-    './app/**/*.{js,ts,jsx,tsx}',
-  ],
-  theme: {
-    extend: {
-      backgroundImage: {
-        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-conic':
-          'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
-      },
+
+export const content = [
+  "./pages/**/*.{js,ts,jsx,tsx}",
+  "./components/**/*.{js,ts,jsx,tsx}",
+  "./app/**/*.{js,ts,jsx,tsx}",
+];
+export const theme = {
+  extend: {
+    colors: {
+      dark: "#414141",
+      gray: "#A7A7A7",
+    },
+    backgroundColor: {
+      "main-color": "#FFE031",
+      white: "#F2F2F2",
+    },
+    backgroundImage: {
+      "main-gradient":
+        "linear-gradient(180deg, #FFFEFA 0%, #FFE031 0%, #FFFEFA 0.01%, #FCFCFC 100%)",
+    },
+    fontFamily: {
+      roboto: ["var(--font-roboto)", ...fontFamily.sans],
     },
   },
-  plugins: [],
-}
+};
+export const plugins = [];
