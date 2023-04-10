@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
+  page: 1,
   multiplier: 1,
   price: 0,
   ingredients: [
@@ -43,22 +44,37 @@ export const dishSlice = createSlice({
       state.ingredients[action.payload].selected = false;
       state.price -= state.ingredients[action.payload].price * state.multiplier;
     },
+    resetIngredients: (state) => {
+      state.ingredients = initialState.ingredients;
+    },
     addMultiplier: (state) => {
       state.multiplier += 1;
     },
     restMultiplier: (state) => {
       state.multiplier -= 1;
     },
+    resetMultiplier: (state) => {
+      state.multiplier = 1;
+    },
+    nextPage: (state) => {
+      state.page += 1;
+    },
+    backPage: (state) => {
+      state.page -= 1;
+    },
   },
 });
 
 export const {
   setPrice,
-  resetPrice,
   setIngredient,
   removeIngredient,
   addMultiplier,
+  resetPrice,
   restMultiplier,
+  resetIngredients,
+  nextPage,
+  backPage,
 } = dishSlice.actions;
 
 export default dishSlice.reducer;
