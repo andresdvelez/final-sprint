@@ -1,36 +1,58 @@
+import React, { useEffect } from "react";
 import { getDish, useGetRestaurantById } from "@/hooks/useFetchRestaurants";
 import { useRouter } from "next/router";
-import React from "react";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import {
+  setPrice,
+  resetPrice,
+  setIngredient,
+  removeIngredient,
+  addMultiplier,
+  restMultiplier,
+} from "@/slices/dishSlice";
+import { addProduct } from "@/slices/carSlice";
 
 function Dish() {
   const router = useRouter();
   const { id, dishId } = router.query;
 
+  const { price, ingredients, multiplier } = useSelector((state) => state.dish);
+  const dispatch = useDispatch();
+
   const restaurant = useGetRestaurantById(id);
 
   const dish = getDish(restaurant?.restaurant?.dishes, dishId);
-  console.log(dish);
 
-  const ingredients = [
-    {
-      id: 1,
-      label: "Tomatoes",
-      selected: true,
-      price: 2,
-    },
-    {
-      id: 2,
-      label: "Grain",
-      selected: false,
-      price: 1,
-    },
-    {
-      id: 3,
-      label: "Lettuce leaf",
-      selected: false,
-      price: 1,
-    },
-  ];
+  useEffect(() => {
+    console.log(dish?.price);
+    dispatch({ type: setPrice, payload: dish?.price });
+  }, [dish?.price, multiplier]);
+
+  const selectIngredient = (id, e) => {
+    if (ingredients[Number(e.target.getAttribute("data-id"))].selected) {
+      dispatch({ type: removeIngredient, payload: id });
+    } else {
+      dispatch({ type: setIngredient, payload: id });
+    }
+  };
+
+  const handleAdd = () => {
+    let selectedDish = {
+      ...dish,
+      finalPrice: price,
+    };
+
+    dispatch({ type: addProduct, payload: selectedDish });
+  };
+
+  const handleRestMultiplier = () => {
+    if (multiplier === 1) {
+      return;
+    } else {
+      dispatch(restMultiplier());
+    }
+  };
 
   return (
     <section className="flex flex-col h-screen">
@@ -48,11 +70,18 @@ function Dish() {
               {dish?.description}
             </p>
             <div>
-              <h3 className="text-sm text-[#A7A7A7]">Additional Ingredients</h3>
-              <ul>
+              <h3 className="text-sm text-[#A7A7A7] mb-2">
+                Additional Ingredients
+              </h3>
+              <ul className="flex flex-col gap-2">
                 {ingredients.map((ingredient) => {
                   return (
-                    <li key={ingredient.id} className="flex justify-between">
+                    <li
+                      onClick={(e) => selectIngredient(ingredient?.id, e)}
+                      data-id={ingredient?.id}
+                      key={ingredient.id}
+                      className="flex justify-between cursor-pointer bg-white p-2 rounded-md"
+                    >
                       <div className="flex items-center gap-3">
                         <div
                           className={`w-4 h-4 rounded-md p-1 flex items-center justify-center text-dark text-xs ${
@@ -82,13 +111,23 @@ function Dish() {
       )}
       <div className="flex gap-4 w-full justify-around h-full mb-8 items-end">
         <div className="bg-white h-11 rounded-xl flex items-center px-4 gap-8">
-          <button className="text-dark text-xl">-</button>
-          <p className="text-dark text-xl">1</p>
-          <button className="text-dark text-xl">+</button>
+          <button className="text-dark text-xl" onClick={handleRestMultiplier}>
+            -
+          </button>
+          <p className="text-dark text-xl">{multiplier}</p>
+          <button
+            className="text-dark text-xl"
+            onClick={() => dispatch(addMultiplier())}
+          >
+            +
+          </button>
         </div>
-        <button className="bg-main-color rounded-xl h-11 flex items-center gap-20 px-4">
+        <button
+          className="bg-main-color rounded-xl h-11 flex items-center gap-20 px-4"
+          onClick={handleAdd}
+        >
           <p className="text-dark text-sm">Add</p>
-          <p className="text-dark text-xl font-light">$14.00</p>
+          <p className="text-dark text-xl font-light">${price.toFixed(2)}</p>
         </button>
       </div>
     </section>
